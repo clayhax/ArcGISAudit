@@ -130,9 +130,10 @@ ArcGISAudit generates:
 ```text
 [HIGH] FeatureServer edit operation reachable without authentication
 [HIGH] ArcGIS public file-upload attack surface exposed
+[HIGH] Unpatched and Unsupported Software Version Detection
 [MEDIUM] Public ArcGIS queryable data exposure
 [MEDIUM] Possible stored XSS sink in ArcGIS layer content
-[INFO] ArcGIS Version Information Disclosure
+[INFORMATIONAL] ArcGIS Version Information Disclosure
 ```
 
 ---
