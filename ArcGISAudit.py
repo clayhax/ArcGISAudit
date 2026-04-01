@@ -4236,17 +4236,24 @@ def write_outputs(findings: Dict[str, Any], out_prefix: Path) -> Tuple[Path, Pat
     grouped = {}
 
     for finding in findings.get("report_ready_findings", []):
-        key = (
-            str(finding.get("severity", "")).lower(),
-            finding.get("title"),
-            finding.get("narrative"),
-        )
+        severity = str(finding.get("severity", "")).lower()
+        title = finding.get("title")
+        narrative = finding.get("narrative")
+        evidence = finding.get("evidence") or {}
+
+        # Normalize duplicate CVE-review findings so ArcGIS Server / Portal versions
+        if title == "Detected ArcGIS version should be reviewed for published CVEs":
+            title = "Detected ArcGIS version should be reviewed for published CVEs"
+            narrative = "Detected ArcGIS Server and/or Portal versions have mapped public CVE reference pages and should be reviewed for known vulnerabilities."
+            key = (severity, title, narrative)
+        else:
+            key = (severity, title, narrative)
 
         if key not in grouped:
             grouped[key] = {
-                "severity": str(finding.get("severity", "")).lower(),
-                "title": finding.get("title"),
-                "narrative": finding.get("narrative"),
+                "severity": severity,
+                "title": title,
+                "narrative": narrative,
                 "count": 0,
             }
 
