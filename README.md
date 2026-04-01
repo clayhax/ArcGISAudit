@@ -9,6 +9,10 @@ ArcGIS environments often expose far more than the HTML Services Directory. Even
 ## Why ArcGISAudit?
 Too often, testers see “Services Directory disabled” and stop there. In reality, ArcGIS environments can still expose a large and complex attack surface underneath the HTML interface. ArcGISAudit helps uncover that surface quickly, so you can spend less time on repetitive enumeration and more time validating real risk.
 
+<p align="center">
+    <img src="screenshots/arcgis-services-directory-disabled.png" width="900">
+</p>
+
 ---
 
 ## Features
