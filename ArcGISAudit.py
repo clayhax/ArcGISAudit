@@ -3835,10 +3835,14 @@ def print_startup_banner(auditor, args):
         else "passive checks only"
     )
 
+    xss_enabled = auditor.active_checks and auditor.xss_checks
+    query_injection_enabled = auditor.active_checks and auditor.query_injection_checks
+    ssrf_enabled = auditor.active_checks and bool(auditor.ssrf_test_url)
+
     features = [
-        f"XSS={'ON' if auditor.xss_checks else 'OFF'}",
-        f"QueryInjection={'ON' if auditor.query_injection_checks else 'OFF'}",
-        f"SSRF={'ON' if auditor.ssrf_test_url else 'OFF'}",
+        f"XSS={'ON' if xss_enabled else 'OFF'}",
+        f"QueryInjection={'ON' if query_injection_enabled else 'OFF'}",
+        f"SSRF={'ON' if ssrf_enabled else 'OFF'}",
     ]
 
     print(f"\n[ArcGISAudit] {line}")
