@@ -3839,25 +3839,32 @@ def print_startup_banner(auditor, args):
     query_injection_enabled = auditor.active_checks and auditor.query_injection_checks
     ssrf_enabled = auditor.active_checks and bool(auditor.ssrf_test_url)
 
-    features = [
+    core_features = [
         f"XSS={'ON' if xss_enabled else 'OFF'}",
         f"QueryInjection={'ON' if query_injection_enabled else 'OFF'}",
         f"SSRF={'ON' if ssrf_enabled else 'OFF'}",
     ]
 
+    active_modules = []
+    if auditor.active_checks:
+        active_modules = ["OpenRedirect", "EditValidation", "AttachmentUpload"]
+
     print(f"\n[ArcGISAudit] {line}")
     print(f"[ArcGISAudit] Target: {auditor.base_url}")
     print(f"[ArcGISAudit] Mode: {mode} ({mode_msg})")
-    print(f"[ArcGISAudit] Features: {' | '.join(features)}")
+    print(f"[ArcGISAudit] Features: {' | '.join(core_features)}")
+
+    if active_modules:
+        print(f"[ArcGISAudit] Active Modules: {', '.join(active_modules)}")
 
     if args.insecure:
         print(f"[ArcGISAudit] TLS Verification: DISABLED")
 
     if args.username:
         print(f"[ArcGISAudit] Auth Mode: Username/Password")
-    
+
     if getattr(args, "all", False):
-        print(f"[ArcGISAudit] Mode: FULL SCAN (--all enabled)")
+        print(f"[ArcGISAudit] Scan Profile: FULL SCAN (--all enabled)")
 
     print(f"[ArcGISAudit] {line}\n")
     
@@ -4311,7 +4318,7 @@ def parse_args() -> argparse.Namespace:
               python3 arcgis_audit.py https://target.example.com/arcgis --all
               python3 arcgis_audit.py https://target.example.com --threads 20 --out arcgis_recon
               python3 arcgis_audit.py https://target.example.com/arcgis --active-checks --ssrf-test-url https://example.com/
-              python3 arcgis_audit.py https://target.example.com/arcgis --xss-checks
+              python3 arcgis_audit.py https://target.example.com/arcgis --active-checks --xss-checks
               python3 arcgis_audit.py https://target.example.com/arcgis --active-checks --xss-checks --query-injection-checks
               python3 arcgis_audit.py https://target.example.com/arcgis --admin-mode --username admin --password 'Secret123!'
             """
@@ -4327,7 +4334,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--max-layers-per-service", type=int, default=None, help="Cap number of layers/tables fetched per service")
     p.add_argument("--admin-mode", action="store_true", help="Attempt admin API enumeration when credentials allow it")
     p.add_argument("--active-checks", action="store_true", help="Enable light-touch active checks such as proxy behavior validation")
-    p.add_argument("--ssrf-test-url", default="https://example.com/", help="Harmless URL used during proxy validation when --active-checks is enabled")
+    p.add_argument("--ssrf-test-url", default=None, help="Harmless URL used during proxy validation when --active-checks is enabled")
     p.add_argument("--xss-checks", action="store_true", help="Enable low-impact reflected XSS canary checks on selected login-like endpoints")
     p.add_argument("--query-injection-checks", action="store_true", help="Enable differential ArcGIS where-clause injection checks on publicly queryable layers")
     p.add_argument("--insecure", action="store_true", help="Disable TLS certificate validation")
@@ -4347,9 +4354,24 @@ def main() -> int:
         args.xss_checks = True
         args.query_injection_checks = True
 
-        # Only set SSRF default if user didn't provide one
+        # Enable SSRF with safe default if not provided with --ssrf-test-url
         if not args.ssrf_test_url:
-            args.ssrf_test_url = "http://example.com"
+            args.ssrf_test_url = "https://example.com/"
+    
+    warnings = []
+
+    if args.xss_checks and not args.active_checks:
+        warnings.append("--xss-checks requires --active-checks")
+
+    if args.query_injection_checks and not args.active_checks:
+        warnings.append("--query-injection-checks requires --active-checks")
+
+    if args.ssrf_test_url and not args.active_checks:
+        warnings.append("SSRF testing requires --active-checks")
+
+    for w in warnings:
+        print(f"[ArcGISAudit] Warning: {w} (currently disabled)")
+    
     auditor = ArcGISAuditor(
         base_url=args.target,
         username=args.username,
