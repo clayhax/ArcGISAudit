@@ -152,13 +152,7 @@ clayhax
 
 ---
 
-## ⭐ Support
-
-If you find this tool useful:
-
-* Star the repo
-* Report issues
-* Contribute or tag me @0xclayhax on twitter with your ideas/suggestions to add
+Comments, suggestions, and improvements are always welcome. Be sure to follow @0xclayhax on Twitter for the latest updates.
 
 ---
 
