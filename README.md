@@ -6,6 +6,12 @@ Built for penetration testers, red teamers, and security engineers to quickly id
 
 ArcGIS environments often expose far more than the HTML Services Directory. Even when the Services Directory is disabled, JSON and pjson REST endpoints, FeatureServer operations, portal surfaces, upload workflows, and management-related paths may still be reachable. ArcGISAudit is built to accelerate that enumeration so testers can spend less time mapping the surface and more time validating impact.
 
+<p align="center">
+  <img src="screenshots/ArcGISAudit-demo.png" width="900">
+</p>
+
+---
+
 ## Why ArcGISAudit?
 Too often, testers see “Services Directory disabled” and stop there. In reality, ArcGIS environments can still expose a large and complex attack surface underneath the HTML interface. ArcGISAudit helps uncover that surface quickly, so you can spend less time on repetitive enumeration and more time validating real risk.
 
